@@ -96,7 +96,6 @@
       margin-bottom:10px;
     }
 
-    /* 🎄 Popup and Confetti */
     #popup {
       position: fixed;
       top: 0; left: 0;
@@ -153,8 +152,9 @@
     <div class="card">
       <h1>🎁 Galsim Clan / Exchange Gift Picker 🎄</h1>
       <p class="hint">Each person can only reveal their receiver after entering their assigned password.</p>
-      <p class="hint">After you find out who you’ll be giving a gift to in the exchange gift, keep it a secret so it will be more thrilling and exciting during the gift exchange!</p>
-      <p class="hint">🎁🎁🎁 Minimum 200 pesos po ang gift haa 😄😄😄</p>
+      <p class="hint">After you find out who you’ll be giving a gift to, keep it secret to make the event more fun!</p>
+      <p class="hint">🎁 Minimum 200 pesos po ang gift 😄</p>
+
       <table id="giftTable">
         <thead>
           <tr>
@@ -168,12 +168,11 @@
 
       <div class="row">
         <button id="revealAll" class="btn-ghost">Reveal all (Admin)</button>
-        <button id="reset" class="btn-ghost">Reset assignments</button>
+        <button id="reset" class="btn-ghost">Reset view</button>
       </div>
     </div>
   </div>
 
-  <!-- 🎊 Popup -->
   <div id="popup">
     <div class="popup-content">
       <canvas id="confettiCanvas"></canvas>
@@ -183,7 +182,29 @@
   </div>
 
   <script>
-    const names = ["allan", "espie", "jaja", "rovic", "aira", "arabel", "andy", "trixy", "dandan", "dana", "dindin", "rona", "alvin", "aron", "sam", "tyler", "edward", "irene", "adam", "bilog"];
+    const assignments = {
+      "allan": "aron",
+      "espie": "rona",
+      "jaja": "sam",
+      "rovic": "dandan",
+      "aira": "irene",
+      "arabel": "edward",
+      "andy": "alvin",
+      "trixy": "adam",
+      "dandan": "espie",
+      "dana": "jaja",
+      "dindin": "andy",
+      "rona": "dana",
+      "alvin": "aira",
+      "aron": "allan",
+      "sam": "bilog",
+      "tyler": "arabel",
+      "edward": "tyler",
+      "irene": "rovic",
+      "adam": "trixy",
+      "bilog": "dindin"
+    };
+
     const passwords = {
       "allan": "lancelot",
       "espie": "binggoqueen",
@@ -213,35 +234,10 @@
     const popupOk = document.getElementById("popupOk");
     let confettiInterval;
 
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
-
-    function generateDerangement(arr) {
-      let n = arr.length;
-      let result = [...Array(n).keys()];
-      let attempt = 0;
-      while (true) {
-        attempt++;
-        shuffle(result);
-        if (result.every((r, i) => r !== i)) return result;
-        if (attempt > 5000) return arr.map((_, i) => (i + 1) % n);
-      }
-    }
-
-    function generateAssignments() {
-      const deranged = generateDerangement(names);
-      const assignments = names.map((_, i) => names[deranged[i]]);
-      localStorage.setItem("gift_assignments", JSON.stringify(assignments));
-      renderTable(assignments);
-    }
-
-    function renderTable(assignments) {
+    function renderTable() {
       tableBody.innerHTML = "";
-      names.forEach((sender, i) => {
+      Object.keys(assignments).forEach(sender => {
+        const receiver = assignments[sender];
         const tr = document.createElement("tr");
         const tdSender = document.createElement("td");
         const tdReceiver = document.createElement("td");
@@ -257,7 +253,6 @@
         btn.addEventListener("click", () => {
           const entered = prompt(`Enter password for ${sender}:`);
           if (entered === passwords[sender]) {
-            const receiver = assignments[i];
             tdReceiver.textContent = receiver;
             tdReceiver.className = "revealed";
             btn.textContent = "Revealed";
@@ -276,17 +271,17 @@
       });
     }
 
-  function showPopup(receiver) {
-  popupMsg.innerHTML = `
-    🎄 <strong>Advance Merry Christmas!</strong><br>
-    Ang iyong reregaluhan ay si <br>
-    <span style="font-size: 1.8em; font-weight: bold; color: #d62828;">
-      ${receiver}
-    </span> 🎁
-  `;
-  popup.style.display = "flex";
-  startConfetti();
-}
+    function showPopup(receiver) {
+      popupMsg.innerHTML = `
+        🎄 <strong>Advance Merry Christmas!</strong><br>
+        Ang iyong reregaluhan ay si <br>
+        <span style="font-size: 1.8em; font-weight: bold; color: #d62828;">
+          ${receiver}
+        </span> 🎁
+      `;
+      popup.style.display = "flex";
+      startConfetti();
+    }
 
     popupOk.addEventListener("click", () => {
       popup.style.display = "none";
@@ -298,7 +293,7 @@
       const ctx = canvas.getContext("2d");
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
-      const confetti = Array.from({ length: 120 }, () => ({
+      const confetti = Array.from({ length: 100 }, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height - canvas.height,
         r: Math.random() * 6 + 4,
@@ -337,13 +332,13 @@
 
     document.getElementById("revealAll").addEventListener("click", () => {
       const adminPass = prompt("Enter admin password to reveal all:");
-      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
-      const assignments = JSON.parse(localStorage.getItem("gift_assignments"));
-      renderTable(assignments);
-      document.querySelectorAll("tbody tr").forEach((row, i) => {
+      if (adminPass !== "1") return alert("Incorrect admin password.");
+      document.querySelectorAll("tbody tr").forEach(row => {
+        const sender = row.children[0].textContent;
+        const receiver = assignments[sender];
         const tdReceiver = row.children[1];
         const btn = row.children[2].querySelector("button");
-        tdReceiver.textContent = assignments[i];
+        tdReceiver.textContent = receiver;
         tdReceiver.className = "revealed";
         btn.textContent = "Revealed";
         btn.disabled = true;
@@ -351,21 +346,12 @@
     });
 
     document.getElementById("reset").addEventListener("click", () => {
-      const adminPass = prompt("Enter admin password to reset:");
-      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
-      if (confirm("Reset and randomize new assignments?")) generateAssignments();
+      if (confirm("Reset view? All revealed names will be hidden again.")) {
+        renderTable();
+      }
     });
 
-    (function init() {
-      const storedAssignments = JSON.parse(localStorage.getItem("gift_assignments"));
-      if (storedAssignments && storedAssignments.length === names.length) {
-        renderTable(storedAssignments);
-      } else {
-        generateAssignments();
-      }
-      window.addEventListener("beforeunload", () => sessionStorage.clear());
-    })();
+    renderTable();
   </script>
 </body>
 </html>
-
