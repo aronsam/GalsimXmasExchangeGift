@@ -332,7 +332,7 @@
 
     document.getElementById("revealAll").addEventListener("click", () => {
       const adminPass = prompt("Enter admin password to reveal all:");
-      if (adminPass !== "1") return alert("Incorrect admin password.");
+      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
       document.querySelectorAll("tbody tr").forEach(row => {
         const sender = row.children[0].textContent;
         const receiver = assignments[sender];
@@ -355,3 +355,4 @@
   </script>
 </body>
 </html>
+
