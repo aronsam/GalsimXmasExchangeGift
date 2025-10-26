@@ -181,21 +181,23 @@
     </div>
   </div>
 
-  
- <script>
+  <script>
 let assignments = {};
 let passwords = {};
+let adminPass = "";
+let confettiInterval;
+
 const tableBody = document.getElementById("tableBody");
 const popup = document.getElementById("popup");
 const popupMsg = document.getElementById("popupMessage");
 const popupOk = document.getElementById("popupOk");
-let confettiInterval;
 
 fetch("data.json")
   .then(res => res.json())
   .then(data => {
     assignments = data.assignments;
     passwords = data.passwords;
+    adminPass = data.admin; // 🧠 load admin password from JSON
     renderTable();
   })
   .catch(err => {
@@ -300,8 +302,8 @@ function stopConfetti() {
 }
 
 document.getElementById("revealAll").addEventListener("click", () => {
-  const adminPass = prompt("Enter admin password to reveal all:");
-  if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
+  const entered = prompt("Enter admin password to reveal all:");
+  if (entered !== adminPass) return alert("❌ Incorrect admin password.");
   document.querySelectorAll("tbody tr").forEach(row => {
     const sender = row.children[0].textContent;
     const receiver = assignments[sender];
@@ -320,8 +322,5 @@ document.getElementById("reset").addEventListener("click", () => {
   }
 });
 </script>
-
-
-
 </body>
 </html>
