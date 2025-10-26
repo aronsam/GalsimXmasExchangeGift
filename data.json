@@ -21,7 +21,6 @@
     "adam": "trixy",
     "bilog": "dindin"
   },
-
   "passwords": {
     "allan": "lancelot",
     "espie": "binggoqueen",
@@ -43,5 +42,6 @@
     "irene": "ireneseller",
     "adam": "adamson",
     "bilog": "circle"
-  }
+  },
+  "admin": "alvinthehunk"
 }
