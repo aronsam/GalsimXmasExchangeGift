@@ -337,7 +337,7 @@
 
     document.getElementById("revealAll").addEventListener("click", () => {
       const adminPass = prompt("Enter admin password to reveal all:");
-      if (adminPass !== "1") return alert("Incorrect admin password.");
+      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
       const assignments = JSON.parse(localStorage.getItem("gift_assignments"));
       renderTable(assignments);
       document.querySelectorAll("tbody tr").forEach((row, i) => {
@@ -352,7 +352,7 @@
 
     document.getElementById("reset").addEventListener("click", () => {
       const adminPass = prompt("Enter admin password to reset:");
-      if (adminPass !== "1") return alert("Incorrect admin password.");
+      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
       if (confirm("Reset and randomize new assignments?")) generateAssignments();
     });
 
@@ -368,3 +368,4 @@
   </script>
 </body>
 </html>
+
