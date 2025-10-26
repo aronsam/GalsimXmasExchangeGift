@@ -95,15 +95,66 @@
       color:var(--muted);
       margin-bottom:10px;
     }
+
+    /* 🎄 Popup and Confetti */
+    #popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .popup-content {
+      position: relative;
+      background: white;
+      color: #0f172a;
+      border-radius: 14px;
+      text-align: center;
+      padding: 30px 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 90%;
+      animation: fadeIn 0.3s ease;
+    }
+    .popup-content p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    #popupOk {
+      background: #5b8def;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #popupOk:hover {
+      background: #4677db;
+    }
+    #confettiCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.9);}
+      to {opacity: 1; transform: scale(1);}
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <h1>Galsim Clan / Exchange Gift Picker</h1>
+      <h1>🎁 Galsim Clan / Exchange Gift Picker 🎄</h1>
       <p class="hint">Each person can only reveal their receiver after entering their assigned password.</p>
-	  <p class="hint">After you find out who you’ll be giving a gift to in the exchange gift, keep it a secret so it will be more thrilling and exciting during the gift exchange</p>
-
+      <p class="hint">After you find out who you’ll be giving a gift to in the exchange gift, keep it a secret so it will be more thrilling and exciting during the gift exchange!</p>
+      <p class="hint">🎁🎁🎁 Minimum 200 pesos po ang gift haa 😄😄😄</p>
       <table id="giftTable">
         <thead>
           <tr>
@@ -122,11 +173,17 @@
     </div>
   </div>
 
-  <script>
-    // 🧑‍🎄 Participants
-    const names = ["allan", "espie", "jaja", "rovic", "aira", "arabel", "andy", "trixy", "dandan",  "dana" ,  "dindin" ,  "rona" , "alvin" , "aron" , "sam" , "tyler" ,"edward"  ,"irene"  ,"adam"  , "bilog"];
+  <!-- 🎊 Popup -->
+  <div id="popup">
+    <div class="popup-content">
+      <canvas id="confettiCanvas"></canvas>
+      <p id="popupMessage"></p>
+      <button id="popupOk">OK</button>
+    </div>
+  </div>
 
-    // 🔐 Admin-set passwords for each sender
+  <script>
+    const names = ["allan", "espie", "jaja", "rovic", "aira", "arabel", "andy", "trixy", "dandan", "dana", "dindin", "rona", "alvin", "aron", "sam", "tyler", "edward", "irene", "adam", "bilog"];
     const passwords = {
       "allan": "lancelot",
       "espie": "binggoqueen",
@@ -136,7 +193,7 @@
       "arabel": "arabelpogi",
       "andy": "andyfruits",
       "trixy": "tricks",
-	  "dandan": "dandansoy",
+      "dandan": "dandansoy",
       "dana": "danana",
       "dindin": "dindingdong",
       "rona": "ronasupermom",
@@ -144,23 +201,18 @@
       "aron": "aronnerd",
       "sam": "samboybiker",
       "tyler": "bunsokulit",
-	  "edward": "edwardcardo",
+      "edward": "edwardcardo",
       "irene": "ireneseller",
       "adam": "adamson",
-      "bilog": "circle",
-     
-	  
-	  
-	  
-	  
-	  
-	  
-	  
+      "bilog": "circle"
     };
 
     const tableBody = document.getElementById("tableBody");
+    const popup = document.getElementById("popup");
+    const popupMsg = document.getElementById("popupMessage");
+    const popupOk = document.getElementById("popupOk");
+    let confettiInterval;
 
-    // Shuffle helper
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -168,7 +220,6 @@
       }
     }
 
-    // Generate derangement (no self-assignments)
     function generateDerangement(arr) {
       let n = arr.length;
       let result = [...Array(n).keys()];
@@ -177,13 +228,10 @@
         attempt++;
         shuffle(result);
         if (result.every((r, i) => r !== i)) return result;
-        if (attempt > 5000) {
-          return arr.map((_, i) => (i + 1) % n); // fallback rotation
-        }
+        if (attempt > 5000) return arr.map((_, i) => (i + 1) % n);
       }
     }
 
-    // Generate and save assignments
     function generateAssignments() {
       const deranged = generateDerangement(names);
       const assignments = names.map((_, i) => names[deranged[i]]);
@@ -191,10 +239,8 @@
       renderTable(assignments);
     }
 
-    // Render the table
     function renderTable(assignments) {
       tableBody.innerHTML = "";
-
       names.forEach((sender, i) => {
         const tr = document.createElement("tr");
         const tdSender = document.createElement("td");
@@ -202,20 +248,21 @@
         const tdAction = document.createElement("td");
 
         tdSender.textContent = sender;
-        tdReceiver.textContent = ""; // always hidden initially
+        tdReceiver.textContent = "";
         tdReceiver.className = "hidden-cell";
 
         const btn = document.createElement("button");
         btn.textContent = "Reveal name";
 
-        // Password-protected reveal (session only)
         btn.addEventListener("click", () => {
           const entered = prompt(`Enter password for ${sender}:`);
           if (entered === passwords[sender]) {
-            tdReceiver.textContent = assignments[i];
+            const receiver = assignments[i];
+            tdReceiver.textContent = receiver;
             tdReceiver.className = "revealed";
             btn.textContent = "Revealed";
             btn.disabled = true;
+            showPopup(receiver);
           } else {
             alert("❌ Incorrect password! Try again.");
           }
@@ -229,13 +276,70 @@
       });
     }
 
-    // Reveal all (Admin)
+  function showPopup(receiver) {
+  popupMsg.innerHTML = `
+    🎄 <strong>Advance Merry Christmas!</strong><br>
+    Ang iyong reregaluhan ay si <br>
+    <span style="font-size: 1.8em; font-weight: bold; color: #d62828;">
+      ${receiver}
+    </span> 🎁
+  `;
+  popup.style.display = "flex";
+  startConfetti();
+}
+
+    popupOk.addEventListener("click", () => {
+      popup.style.display = "none";
+      stopConfetti();
+    });
+
+    function startConfetti() {
+      const canvas = document.getElementById("confettiCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      const confetti = Array.from({ length: 120 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * 10 + 10,
+        color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+        tilt: Math.random() * 10 - 10,
+      }));
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confetti.forEach(c => {
+          ctx.beginPath();
+          ctx.fillStyle = c.color;
+          ctx.ellipse(c.x, c.y, c.r, c.r / 2, c.tilt, 0, 2 * Math.PI);
+          ctx.fill();
+        });
+        update();
+      }
+
+      function update() {
+        confetti.forEach(c => {
+          c.y += Math.cos(c.d) + 1;
+          c.x += Math.sin(c.d);
+          if (c.y > canvas.height) {
+            c.y = -10;
+            c.x = Math.random() * canvas.width;
+          }
+        });
+      }
+      confettiInterval = setInterval(draw, 20);
+    }
+
+    function stopConfetti() {
+      clearInterval(confettiInterval);
+    }
+
     document.getElementById("revealAll").addEventListener("click", () => {
       const adminPass = prompt("Enter admin password to reveal all:");
-      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
+      if (adminPass !== "1") return alert("Incorrect admin password.");
       const assignments = JSON.parse(localStorage.getItem("gift_assignments"));
       renderTable(assignments);
-      // Instantly reveal all
       document.querySelectorAll("tbody tr").forEach((row, i) => {
         const tdReceiver = row.children[1];
         const btn = row.children[2].querySelector("button");
@@ -246,14 +350,12 @@
       });
     });
 
-    // Reset and reshuffle
     document.getElementById("reset").addEventListener("click", () => {
       const adminPass = prompt("Enter admin password to reset:");
-      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
+      if (adminPass !== "1") return alert("Incorrect admin password.");
       if (confirm("Reset and randomize new assignments?")) generateAssignments();
     });
 
-    // Initialize
     (function init() {
       const storedAssignments = JSON.parse(localStorage.getItem("gift_assignments"));
       if (storedAssignments && storedAssignments.length === names.length) {
@@ -261,11 +363,7 @@
       } else {
         generateAssignments();
       }
-
-      // 🧹 Clear any reveal states when closing or refreshing
-      window.addEventListener("beforeunload", () => {
-        sessionStorage.clear(); // just in case
-      });
+      window.addEventListener("beforeunload", () => sessionStorage.clear());
     })();
   </script>
 </body>
