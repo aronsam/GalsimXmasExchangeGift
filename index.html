@@ -181,177 +181,147 @@
     </div>
   </div>
 
-  <script>
-    const assignments = {
-      "allan": "aron",
-      "espie": "rona",
-      "jaja": "sam",
-      "rovic": "dandan",
-      "aira": "irene",
-      "arabel": "edward",
-      "andy": "alvin",
-      "trixy": "adam",
-      "dandan": "espie",
-      "dana": "jaja",
-      "dindin": "andy",
-      "rona": "dana",
-      "alvin": "aira",
-      "aron": "allan",
-      "sam": "bilog",
-      "tyler": "arabel",
-      "edward": "tyler",
-      "irene": "rovic",
-      "adam": "trixy",
-      "bilog": "dindin"
-    };
+  
+ <script>
+let assignments = {};
+let passwords = {};
+const tableBody = document.getElementById("tableBody");
+const popup = document.getElementById("popup");
+const popupMsg = document.getElementById("popupMessage");
+const popupOk = document.getElementById("popupOk");
+let confettiInterval;
 
-    const passwords = {
-      "allan": "lancelot",
-      "espie": "binggoqueen",
-      "jaja": "jajaalasexy",
-      "rovic": "rovicpogi",
-      "aira": "airaganda",
-      "arabel": "arabelpogi",
-      "andy": "andyfruits",
-      "trixy": "tricks",
-      "dandan": "dandansoy",
-      "dana": "danana",
-      "dindin": "dindingdong",
-      "rona": "ronasupermom",
-      "alvin": "alvinhunk",
-      "aron": "aronnerd",
-      "sam": "samboybiker",
-      "tyler": "bunsokulit",
-      "edward": "edwardcardo",
-      "irene": "ireneseller",
-      "adam": "adamson",
-      "bilog": "circle"
-    };
+fetch("data.json")
+  .then(res => res.json())
+  .then(data => {
+    assignments = data.assignments;
+    passwords = data.passwords;
+    renderTable();
+  })
+  .catch(err => {
+    alert("⚠️ Failed to load data.json file!");
+    console.error(err);
+  });
 
-    const tableBody = document.getElementById("tableBody");
-    const popup = document.getElementById("popup");
-    const popupMsg = document.getElementById("popupMessage");
-    const popupOk = document.getElementById("popupOk");
-    let confettiInterval;
+function renderTable() {
+  tableBody.innerHTML = "";
+  Object.keys(assignments).forEach(sender => {
+    const receiver = assignments[sender];
+    const tr = document.createElement("tr");
+    const tdSender = document.createElement("td");
+    const tdReceiver = document.createElement("td");
+    const tdAction = document.createElement("td");
 
-    function renderTable() {
-      tableBody.innerHTML = "";
-      Object.keys(assignments).forEach(sender => {
-        const receiver = assignments[sender];
-        const tr = document.createElement("tr");
-        const tdSender = document.createElement("td");
-        const tdReceiver = document.createElement("td");
-        const tdAction = document.createElement("td");
+    tdSender.textContent = sender;
+    tdReceiver.textContent = "";
+    tdReceiver.className = "hidden-cell";
 
-        tdSender.textContent = sender;
-        tdReceiver.textContent = "";
-        tdReceiver.className = "hidden-cell";
+    const btn = document.createElement("button");
+    btn.textContent = "Reveal name";
 
-        const btn = document.createElement("button");
-        btn.textContent = "Reveal name";
-
-        btn.addEventListener("click", () => {
-          const entered = prompt(`Enter password for ${sender}:`);
-          if (entered === passwords[sender]) {
-            tdReceiver.textContent = receiver;
-            tdReceiver.className = "revealed";
-            btn.textContent = "Revealed";
-            btn.disabled = true;
-            showPopup(receiver);
-          } else {
-            alert("❌ Incorrect password! Try again.");
-          }
-        });
-
-        tdAction.appendChild(btn);
-        tr.appendChild(tdSender);
-        tr.appendChild(tdReceiver);
-        tr.appendChild(tdAction);
-        tableBody.appendChild(tr);
-      });
-    }
-
-    function showPopup(receiver) {
-      popupMsg.innerHTML = `
-        🎄 <strong>Advance Merry Christmas!</strong><br>
-        Ang iyong reregaluhan ay si <br>
-        <span style="font-size: 1.8em; font-weight: bold; color: #d62828;">
-          ${receiver}
-        </span> 🎁
-      `;
-      popup.style.display = "flex";
-      startConfetti();
-    }
-
-    popupOk.addEventListener("click", () => {
-      popup.style.display = "none";
-      stopConfetti();
-    });
-
-    function startConfetti() {
-      const canvas = document.getElementById("confettiCanvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      const confetti = Array.from({ length: 100 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height,
-        r: Math.random() * 6 + 4,
-        d: Math.random() * 10 + 10,
-        color: `hsl(${Math.random() * 360}, 100%, 60%)`,
-        tilt: Math.random() * 10 - 10,
-      }));
-
-      function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        confetti.forEach(c => {
-          ctx.beginPath();
-          ctx.fillStyle = c.color;
-          ctx.ellipse(c.x, c.y, c.r, c.r / 2, c.tilt, 0, 2 * Math.PI);
-          ctx.fill();
-        });
-        update();
-      }
-
-      function update() {
-        confetti.forEach(c => {
-          c.y += Math.cos(c.d) + 1;
-          c.x += Math.sin(c.d);
-          if (c.y > canvas.height) {
-            c.y = -10;
-            c.x = Math.random() * canvas.width;
-          }
-        });
-      }
-      confettiInterval = setInterval(draw, 20);
-    }
-
-    function stopConfetti() {
-      clearInterval(confettiInterval);
-    }
-
-    document.getElementById("revealAll").addEventListener("click", () => {
-      const adminPass = prompt("Enter admin password to reveal all:");
-      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
-      document.querySelectorAll("tbody tr").forEach(row => {
-        const sender = row.children[0].textContent;
-        const receiver = assignments[sender];
-        const tdReceiver = row.children[1];
-        const btn = row.children[2].querySelector("button");
+    btn.addEventListener("click", () => {
+      const entered = prompt(`Enter password for ${sender}:`);
+      if (entered === passwords[sender]) {
         tdReceiver.textContent = receiver;
         tdReceiver.className = "revealed";
         btn.textContent = "Revealed";
         btn.disabled = true;
-      });
-    });
-
-    document.getElementById("reset").addEventListener("click", () => {
-      if (confirm("Reset view? All revealed names will be hidden again.")) {
-        renderTable();
+        showPopup(receiver);
+      } else {
+        alert("❌ Incorrect password! Try again.");
       }
     });
 
+    tdAction.appendChild(btn);
+    tr.appendChild(tdSender);
+    tr.appendChild(tdReceiver);
+    tr.appendChild(tdAction);
+    tableBody.appendChild(tr);
+  });
+}
+
+function showPopup(receiver) {
+  popupMsg.innerHTML = `
+    🎄 <strong>Advance Merry Christmas!</strong><br>
+    Ang iyong reregaluhan ay si <br>
+    <span style="font-size: 1.8em; font-weight: bold; color: #d62828;">
+      ${receiver}
+    </span> 🎁
+  `;
+  popup.style.display = "flex";
+  startConfetti();
+}
+
+popupOk.addEventListener("click", () => {
+  popup.style.display = "none";
+  stopConfetti();
+});
+
+function startConfetti() {
+  const canvas = document.getElementById("confettiCanvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  const confetti = Array.from({ length: 100 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    r: Math.random() * 6 + 4,
+    d: Math.random() * 10 + 10,
+    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+    tilt: Math.random() * 10 - 10,
+  }));
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confetti.forEach(c => {
+      ctx.beginPath();
+      ctx.fillStyle = c.color;
+      ctx.ellipse(c.x, c.y, c.r, c.r / 2, c.tilt, 0, 2 * Math.PI);
+      ctx.fill();
+    });
+    update();
+  }
+
+  function update() {
+    confetti.forEach(c => {
+      c.y += Math.cos(c.d) + 1;
+      c.x += Math.sin(c.d);
+      if (c.y > canvas.height) {
+        c.y = -10;
+        c.x = Math.random() * canvas.width;
+      }
+    });
+  }
+  confettiInterval = setInterval(draw, 20);
+}
+
+function stopConfetti() {
+  clearInterval(confettiInterval);
+}
+
+document.getElementById("revealAll").addEventListener("click", () => {
+  const adminPass = prompt("Enter admin password to reveal all:");
+  if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
+  document.querySelectorAll("tbody tr").forEach(row => {
+    const sender = row.children[0].textContent;
+    const receiver = assignments[sender];
+    const tdReceiver = row.children[1];
+    const btn = row.children[2].querySelector("button");
+    tdReceiver.textContent = receiver;
+    tdReceiver.className = "revealed";
+    btn.textContent = "Revealed";
+    btn.disabled = true;
+  });
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+  if (confirm("Reset view? All revealed names will be hidden again.")) {
     renderTable();
-  </script>
+  }
+});
+</script>
+
+
+
 </body>
 </html>
