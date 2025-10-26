@@ -100,8 +100,9 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>Galsim Clan / Exchange Gift Picker 2025</h1>
-      <p class="hint">Each person can only reveal their receiver after entering their assigned password. .</p>
+      <h1>Galsim Clan / Exchange Gift Picker</h1>
+      <p class="hint">Each person can only reveal their receiver after entering their assigned password.</p>
+	  <p class="hint">After you find out who you’ll be giving a gift to in the exchange gift, keep it a secret so it will be more thrilling and exciting during the gift exchange</p>
 
       <table id="giftTable">
         <thead>
@@ -123,25 +124,25 @@
 
   <script>
     // 🧑‍🎄 Participants
-    const names = ["allan", "espie", "jaja", "rovic", "aira", "arabel", "andy", "trixy", "dandan",  "dana" ,  "dindin" ,  "rona" , "alvin" , "sam" , "tyler" ,"edward"  ,"irene"  ,"adam"  , "bilog"];
+    const names = ["allan", "espie", "jaja", "rovic", "aira", "arabel", "andy", "trixy", "dandan",  "dana" ,  "dindin" ,  "rona" , "alvin" , "aron" , "sam" , "tyler" ,"edward"  ,"irene"  ,"adam"  , "bilog"];
 
     // 🔐 Admin-set passwords for each sender
     const passwords = {
-      "allan": "allan123",
-      "espie": "espie123",
-      "jaja": "jajaandy",
+      "allan": "lancelot",
+      "espie": "binggoqueen",
+      "jaja": "jajaalasexy",
       "rovic": "rovicpogi",
       "aira": "airaganda",
       "arabel": "arabelpogi",
-      "andy": "andygrapes",
+      "andy": "andyfruits",
       "trixy": "tricks",
 	  "dandan": "dandansoy",
       "dana": "danana",
       "dindin": "dindingdong",
-      "rona": "rona143",
-      "alvin": "alvinsuper",
-      "aron": "aron08",
-      "sam": "samboyboy",
+      "rona": "ronasupermom",
+      "alvin": "alvinhunk",
+      "aron": "aronnerd",
+      "sam": "samboybiker",
       "tyler": "bunsokulit",
 	  "edward": "edwardcardo",
       "irene": "ireneseller",
@@ -231,7 +232,7 @@
     // Reveal all (Admin)
     document.getElementById("revealAll").addEventListener("click", () => {
       const adminPass = prompt("Enter admin password to reveal all:");
-      if (adminPass !== "aronsam123") return alert("Incorrect admin password.");
+      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
       const assignments = JSON.parse(localStorage.getItem("gift_assignments"));
       renderTable(assignments);
       // Instantly reveal all
@@ -248,7 +249,7 @@
     // Reset and reshuffle
     document.getElementById("reset").addEventListener("click", () => {
       const adminPass = prompt("Enter admin password to reset:");
-      if (adminPass !== "aronsam123") return alert("Incorrect admin password.");
+      if (adminPass !== "alvinthehunk") return alert("Incorrect admin password.");
       if (confirm("Reset and randomize new assignments?")) generateAssignments();
     });
 
@@ -269,4 +270,3 @@
   </script>
 </body>
 </html>
-
