@@ -1,0 +1,47 @@
+{
+  "assignments": {
+    "allan": "aron",
+    "espie": "rona",
+    "jaja": "sam",
+    "rovic": "dandan",
+    "aira": "irene",
+    "arabel": "edward",
+    "andy": "alvin",
+    "trixy": "adam",
+    "dandan": "espie",
+    "dana": "jaja",
+    "dindin": "andy",
+    "rona": "dana",
+    "alvin": "aira",
+    "aron": "allan",
+    "sam": "bilog",
+    "tyler": "arabel",
+    "edward": "tyler",
+    "irene": "rovic",
+    "adam": "trixy",
+    "bilog": "dindin"
+  },
+
+  "passwords": {
+    "allan": "lancelot",
+    "espie": "binggoqueen",
+    "jaja": "jajaalasexy",
+    "rovic": "rovicpogi",
+    "aira": "airaganda",
+    "arabel": "arabelpogi",
+    "andy": "andyfruits",
+    "trixy": "tricks",
+    "dandan": "dandansoy",
+    "dana": "danana",
+    "dindin": "dindingdong",
+    "rona": "ronasupermom",
+    "alvin": "alvinhunk",
+    "aron": "aronnerd",
+    "sam": "samboybiker",
+    "tyler": "bunsokulit",
+    "edward": "edwardcardo",
+    "irene": "ireneseller",
+    "adam": "adamson",
+    "bilog": "circle"
+  }
+}
